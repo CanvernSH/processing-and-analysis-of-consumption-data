@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Plot } from './Plot';
 
 const visualiseData = () => {
   const textMessage = "Consumption Data";
@@ -26,6 +27,9 @@ const visualiseData = () => {
       <br></br>
 
       {apiMessage}
+
+      <div id="consumption_data_plot"></div>
+      <Plot></Plot>
 
     </div>
   )
