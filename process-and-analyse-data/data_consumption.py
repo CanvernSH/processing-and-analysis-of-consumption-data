@@ -16,6 +16,7 @@ class ValidateData():
         # Ensure household_id is a string of length 10 characters
         try:
             if len(self.data['household_id']) == 10:
+                print(len(self.data))
                 # Assume household id is only to contain alphanumeric characters
                 household_id = self.data['household_id']
                 
@@ -75,6 +76,14 @@ class ValidateData():
             return True
         except:
             print("Error: error occurred while validating the consumption date - Consumption date should be in the yyyy-mm-dd format")
+            return False
+        
+    def validate_all_checks(self):
+        try:
+            if self.check_household_id() and self.check_meter_point_id() and self.check_consumption_type() and self.check_consumption_value() and self.check_consumption_date():
+                return True
+            return False
+        except:
             return False
 
 

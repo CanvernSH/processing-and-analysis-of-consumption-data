@@ -24,13 +24,13 @@ export const Plot = () => {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         
         // Add x-axis
-        let x = d3.scaleLinear()
-        .domain([0, 10])
+        let x = d3.scaleTime()
+        .domain([new Date(2025, 6, 1), new Date(2025, 8, 1)])
         .range([0, width])
 
         svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).tickSize(-height*1.3).ticks(10))
+        .call(d3.axisBottom(x))
         .select(".domain").remove()
 
         // Add y-axis
@@ -67,7 +67,7 @@ export const Plot = () => {
         .range(["#402D54", "#D18975"])
 
         // Read the data - collect data from online temp
-        const data = [{"household_id": "abcdabcdab", "meter_point_id": 1234567890123, "consumption": {"consumption_type": "Import", "consumption_value": 1.5, "consumption_date": 2}}, {"household_id": "Abcdabcdab", "meter_point_id": 1234567890123, "consumption": {"consumption_type": "Export", "consumption_value": 2.5, "consumption_date": 3}}]
+        const data = [{"household_id": "abcdabcdab", "meter_point_id": 1234567890123, "consumption": {"consumption_type": "Import", "consumption_value": 1.5, "consumption_date": new Date(2025, 6, 1)}}, {"household_id": "Abcdabcdab", "meter_point_id": 1234567890123, "consumption": {"consumption_type": "Export", "consumption_value": 2.5, "consumption_date": new Date(2025, 7, 1)}}]
 
         // Create div - optional use css
         const div = d3.select("body").append("div")
@@ -85,7 +85,6 @@ export const Plot = () => {
         .attr("r", 5)
         .style("fill", function (d) { return colour(d.consumption.consumption_type) })
         .on('mouseover', function(event, d) {
-            console.log(event.pageX)
             d3.select(this).transition()
                 .duration('100')
                 .attr("r", 7);
@@ -96,7 +95,7 @@ export const Plot = () => {
                 .style("opacity", 1);
 
             // Show text in the div by inserting html
-            div.html(d.household_id)
+            div.html(d.household_id + ", " + d.meter_point_id + ", " + d.consumption.consumption_value + ", " + d.consumption.consumption_date.toDateString())
                 .style("left", (event.pageX + 10) + "px")
                 .style("top", (event.pageY - 15) + "px");
             
@@ -105,10 +104,13 @@ export const Plot = () => {
         .on('mouseout', function (event, d) {
             d3.select(this).transition()
                 .duration('200')
-                .attr("r", 8);
+                .attr("r", 5);
             div.transition()
                 .duration('200')
                 .style("opacity", 0);
         });
-        })
+        }, [])
+        return (
+            <div id="consumption_data_plot"></div>
+        )
 }

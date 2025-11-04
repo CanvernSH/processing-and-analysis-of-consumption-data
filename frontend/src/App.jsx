@@ -1,38 +1,21 @@
-import { useState } from 'react';
-import { Plot } from './Plot';
+import React, {useState} from 'react';
+import VisualiseData from './pages/InteractionPage';
+import UploadData from './pages/ProcessData';
 
-const visualiseData = () => {
-  const textMessage = "Consumption Data";
-  const [apiMessage, setApiMessage] = useState("press Button")
-
-  // Call the backend
-  const handleButton = async () => {
-    const response = await fetch('http://127.0.0.1:5000', {
-      method: 'GET'
-    });
-    const result = await response.json();
-
-    if (!response.ok) {
-      setApiMessage("Error");
-    } else {
-      setApiMessage(result.message)
-    }
-  }
+const App = () => {
+  const [showData, setShowData] = useState(true);
+  const [text, setText] = useState("Show Page to Upload Data")
 
   return (
     <div>
-      <p> Here is the data </p>
-      <button onClick={handleButton}> Press to call backend </button>
-      
+      <button onClick={() => {setShowData(!showData); text=="Show Page to Upload Data" ? setText("Show Page of the Plot Data") : setText("Show Page to Upload Data")}}>{text}</button>
       <br></br>
-
-      {apiMessage}
-
-      <div id="consumption_data_plot"></div>
-      <Plot></Plot>
-
+      {showData && <VisualiseData></VisualiseData>}
+      <br></br>
+      
+    {!showData && <UploadData></UploadData>}
     </div>
   )
 }
 
-export default visualiseData;
+export default App;
