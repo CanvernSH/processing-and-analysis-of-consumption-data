@@ -11,7 +11,7 @@ const VisualiseData = () => {
 
     const CollectConsumptionData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/collect-consumption-data", {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/collect-consumption-data`, {
           method: 'GET'
         });
         const result = await response.json()

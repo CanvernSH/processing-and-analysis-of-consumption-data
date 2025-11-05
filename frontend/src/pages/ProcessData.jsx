@@ -28,7 +28,7 @@ const UploadData = () => {
 
         const consumption_data = JSON.parse(consumptionData);
         
-        const response = await fetch("http://127.0.0.1:5000/upload-consumption-data", {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/upload-consumption-data`, {
             method: 'POST',
             headers: { 'Content-Type' : 'application/json' },
             body: JSON.stringify({'consumption_data': consumption_data})
@@ -82,7 +82,7 @@ const UploadData = () => {
     const handleResetTableData = async () => {
         try {
             // Call backend to clear table data if the reset text is correct
-            const response = await fetch("http://127.0.0.1:5000/delete-data-from-all-sql-tables", {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/delete-data-from-all-sql-tables`, {
                 method: 'POST',
                 headers: { 'Content-Type' : 'application/json' },
                 body: JSON.stringify({ 'reset_password': document.getElementById('reset_text').value })
@@ -114,7 +114,7 @@ const UploadData = () => {
                 }
 
                 // Call backend: Generate Consumption Data
-                const response = await fetch(`http://127.0.0.1:5000/generate-consumption-data/${number}`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/generate-consumption-data/${number}`, {
                     method: 'GET'
                 });
                 const result = await response.json();
