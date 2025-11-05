@@ -3,3 +3,9 @@ flask_cors
 datetime
 random2
 pytest
+flask-sqlalchemy
+python-dotenv
+psycopg2
+sqlalchemy
+psycopg2-binary
+werkzeug

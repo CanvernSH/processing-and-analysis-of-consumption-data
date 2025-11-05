@@ -8,10 +8,12 @@ import * as d3 from "d3";
 import './PlotStyles.css'
 
 // Date x axis and consumpiton value y axis - with import/export in different colours
-export const Plot = () => {
+export const Plot = ({ consumption_data, max_consumption_value, earliest_consumption_date }) => {
+    console.log(consumption_data, max_consumption_value, earliest_consumption_date)
+    
     useEffect(() => {
         // Set the dimensions and margins of the plot
-        let margin = {top: 10, right: 30, bottom: 40, left: 50},
+        let margin = {top: 30, right: 30, bottom: 40, left: 50},
         width = 520 - margin.left - margin.right,
         height = 520 - margin.top - margin.bottom;
 
@@ -22,20 +24,19 @@ export const Plot = () => {
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-        
         // Add x-axis
         let x = d3.scaleTime()
-        .domain([new Date(2025, 6, 1), new Date(2025, 8, 1)])
+        .domain([new Date(earliest_consumption_date), new Date('2025-11-05')])
         .range([0, width])
 
         svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x))
+        .call(d3.axisBottom(x).tickSize(-height*1.3).ticks(7))
         .select(".domain").remove()
 
         // Add y-axis
         let y = d3.scaleLinear()
-        .domain([0,3])
+        .domain([0, max_consumption_value])
         .range([height, 0])
         .nice()
 
@@ -50,8 +51,8 @@ export const Plot = () => {
         svg.append("text")
         .attr("text-anchor", "end")
         .attr("x", width)
-        .attr("y", height + margin.top + 20)
-        .text("x-axis");
+        .attr("y", height + margin.top)
+        .text("Date");
 
         // Add y-axis label
         svg.append("text")
@@ -59,7 +60,30 @@ export const Plot = () => {
         .attr("transform", "rotate(-90)")
         .attr("y", -margin.left + 20)
         .attr("x", -margin.top)
-        .text("y-axis")
+        .text("Consumption value")
+
+        // Add key - 1
+        svg.append("text")
+        .attr("x", (0.42 * width))
+        .attr("y", height + margin.top + 7)
+        .attr("text-anchor", "middle")
+        .text("Import,")
+        .style("stroke", '#402D54')
+
+        // Add key - 2
+        svg.append("text")
+        .attr("x", (0.58 * width))
+        .attr("y", height + margin.top + 7)
+        .attr("text-anchor", "middle")
+        .text("Export")
+        .style("stroke", '#D18975')
+
+        // Add a title
+        svg.append("text")
+        .attr("x", (0.5 * width))
+        .attr("y", 0 - (margin.top / 2))
+        .attr("text-anchor", "middle")
+        .text("Plot of the Consumption Data")
 
         // Colour scale: give me a specific consumption type, I return a colour
         let colour = d3.scaleOrdinal()
@@ -67,7 +91,8 @@ export const Plot = () => {
         .range(["#402D54", "#D18975"])
 
         // Read the data - collect data from online temp
-        const data = [{"household_id": "abcdabcdab", "meter_point_id": 1234567890123, "consumption": {"consumption_type": "Import", "consumption_value": 1.5, "consumption_date": new Date(2025, 6, 1)}}, {"household_id": "Abcdabcdab", "meter_point_id": 1234567890123, "consumption": {"consumption_type": "Export", "consumption_value": 2.5, "consumption_date": new Date(2025, 7, 1)}}]
+        // const data2 = [{"household_id": "abcdabcdab", "meter_point_id": 1234567890123, "consumption": [{"consumption_type": "Import", "consumption_value": 1.5, "consumption_date": new Date('2025-06-01')}]}, {"household_id": "Abcdabcdab", "meter_point_id": 1234567890123, "consumption": [{"consumption_type": "Export", "consumption_value": 2.5, "consumption_date": new Date('2025-07-01')}]}]
+        const data = consumption_data
 
         // Create div - optional use css
         const div = d3.select("body").append("div")
@@ -80,10 +105,10 @@ export const Plot = () => {
         .data(data)
         .enter()
         .append("circle")
-        .attr("cx", function (d) { return x(d.consumption.consumption_date); })
-        .attr("cy", function (d) { return y(d.consumption.consumption_value); })
+        .attr("cx", function (d) { return x(new Date(d.consumption[0].consumption_date)); })
+        .attr("cy", function (d) { return y(d.consumption[0].consumption_value); })
         .attr("r", 5)
-        .style("fill", function (d) { return colour(d.consumption.consumption_type) })
+        .style("fill", function (d) { return colour(d.consumption[0].consumption_type) })
         .on('mouseover', function(event, d) {
             d3.select(this).transition()
                 .duration('100')
@@ -95,7 +120,7 @@ export const Plot = () => {
                 .style("opacity", 1);
 
             // Show text in the div by inserting html
-            div.html(d.household_id + ", " + d.meter_point_id + ", " + d.consumption.consumption_value + ", " + d.consumption.consumption_date.toDateString())
+            div.html(d.household_id + ", " + d.meter_point_id + ", " + Math.round((d.consumption[0].consumption_value + Number.EPSILON) * 100) / 100  + ", " + new Date(d.consumption[0].consumption_date).toDateString())
                 .style("left", (event.pageX + 10) + "px")
                 .style("top", (event.pageY - 15) + "px");
             

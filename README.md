@@ -58,4 +58,22 @@ This full-stack app aims to process and analyse consumption data, displaying the
 
     Additionally, I have separated the 'src' folder into a 'pages' and 'components' folder for improved readability and clean code.
 
+4. The following has been Implemented:
+- Implemented the uploading of the consumption data to the three tables in the online SQL database. 
 
+- Added Route '/delete-data-from-all-sql-tables': Provides the ability to delete all data from all tables in the SQL database. This deletion of all data is secured by a hashed password.
+
+- Added Route '/collect-consumption-data': Collects the consumption data from the consumption table in the online SQL database. The consumption data is then transferred to the frontend, and the data is displayed in a scatter plot.
+
+- Added Route '/generate-consumption-data/\<N>': Generates N lots of consumption data returned in an array. This Route makes use of the create_data function in data_consumption.py to generate the data. The consumption data can then be uploaded to the SQL database if the user chooses to do so.
+
+- Adjusted the Frontend to utilise the implemented backend routes
+
+At this point, we have a functioning full-stack application which:  
+- Has the ability to Receive consumption data and Validate it against the provided API schemas, providing accurate responses.
+- Uses OOP principles for some of the system's core components
+- Implements Robust Error handling for Invalid Operations
+- Utilises Unit Testing to ensure all validation methods function correctly
+- Illustrates the data and displays analytical results.
+
+Next Steps: Display statistical information about the consumption data; allow users to search consumption data by ID, date, or other; Detect anomalies in the consumption data and expose them.
