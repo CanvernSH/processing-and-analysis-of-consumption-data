@@ -36,7 +36,7 @@ class ValidateData():
     def check_meter_point_id(self):
         # Ensure meter_point_id is a 13 digit positive integer
         try:
-            if type(self.data['meter_point_id']) == int and 0 <= self.data['meter_point_id'] <= 10**14 - 1:
+            if type(self.data['meter_point_id']) == int and 0 <= self.data['meter_point_id'] <= 10**13 - 1:
                 return True
             print("Error: metering point id should be a positive integer between 0 and 10^14 - 1 (inclusive)")
             return False
@@ -104,7 +104,7 @@ def create_data(n = 1):
     for i in range(n):
         # Randomly generate the data
         household_id = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(10)) # generate a 10-character alphanumeric string
-        meter_point_id = random.randint(0, 10**14 - 1)
+        meter_point_id = random.randint(0, 10**13 - 1)
         consumption_type = random.choice(['Import', 'Export'])
         consumption_value = random.uniform(0.0, 100.0)
 
@@ -121,4 +121,6 @@ def create_data(n = 1):
     return consumption_data
 
 if __name__ == '__main__':
+    print(10**14)
     print(create_data(5))
+    100000000000000

@@ -3,139 +3,224 @@
 // THIS WILL HELP IN DETECTING ANOMOLIES!
 
 // I will do even better and when a user clicks on a point, the specific household_id and meterpoint_id will show
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import * as d3 from "d3";
 import './PlotStyles.css'
 
 // Date x axis and consumpiton value y axis - with import/export in different colours
-export const Plot = ({ consumption_data, max_consumption_value, earliest_consumption_date }) => {
-    console.log(consumption_data, max_consumption_value, earliest_consumption_date)
+export const Plot = ({ consumption_data, max_consumption_value, earliest_consumption_date, mean_consumption_value, std_consumption_value,  plot_description }) => {
+    let count = 0
+    count = count + 1
+    console.log(count);
+    console.log(consumption_data, max_consumption_value, earliest_consumption_date, mean_consumption_value, std_consumption_value, plot_description);
+
+    // Check if there is any day to show
+    const [loadPlot, setLoadPlot] = useState(true);
+    console.log(new Date().toISOString().split("T")[0])
+
     
     useEffect(() => {
-        // Set the dimensions and margins of the plot
-        let margin = {top: 30, right: 30, bottom: 40, left: 50},
-        width = 520 - margin.left - margin.right,
-        height = 520 - margin.top - margin.bottom;
+        if (consumption_data.length===0) {
+            setLoadPlot(false); 
+        } else {
+            // Set the dimensions and margins of the plot
+            let margin = {top: 30, right: 30, bottom: 100, left: 50},
+            width = 520 - margin.left - margin.right,
+            height = 520 - margin.top - margin.bottom;
 
-        // Append the svg object to the body of the page
-        let svg = d3.select("#consumption_data_plot")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-        // Add x-axis
-        let x = d3.scaleTime()
-        .domain([new Date(earliest_consumption_date), new Date('2025-11-05')])
-        .range([0, width])
+            // Append the svg object to the body of the page
+            let svg = d3.select("#consumption_data_plot")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            // Add x-axis
+            let x = d3.scaleTime()
+            .domain([new Date(earliest_consumption_date), new Date(new Date().toISOString().split("T")[0])])
+            .range([0, width])
 
-        svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).tickSize(-height*1.3).ticks(7))
-        .select(".domain").remove()
+            svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x).tickSize(-height*1.3).ticks(7))
+            .select(".domain").remove()
 
-        // Add y-axis
-        let y = d3.scaleLinear()
-        .domain([0, max_consumption_value])
-        .range([height, 0])
-        .nice()
+            // Add y-axis
+            let y = d3.scaleLinear()
+            .domain([0, max_consumption_value])
+            .range([height, 0])
+            .nice()
 
-        svg.append("g")
-        .call(d3.axisLeft(y).tickSize(-width*1.3).ticks(7))
-        .select(".domain").remove()
+            svg.append("g")
+            .call(d3.axisLeft(y).tickSize(-width*1.3).ticks(7))
+            .select(".domain").remove()
 
-        // Customization
-        svg.selectAll(".tick line").attr("stroke", "#EBEBEB")
+            // Customization
+            svg.selectAll(".tick line").attr("stroke", "#EBEBEB")
 
-        // Add x-axis label   
-        svg.append("text")
-        .attr("text-anchor", "end")
-        .attr("x", width)
-        .attr("y", height + margin.top)
-        .text("Date");
+            // Add x-axis label   
+            svg.append("text")
+            .attr("text-anchor", "end")
+            .attr("x", width)
+            .attr("y", height + margin.top)
+            .text("Date");
 
-        // Add y-axis label
-        svg.append("text")
-        .attr("text-anchor", "end")
-        .attr("transform", "rotate(-90)")
-        .attr("y", -margin.left + 20)
-        .attr("x", -margin.top)
-        .text("Consumption value")
+            svg.append("g")
+            .style("font", "14px sans-serif")
+            .style("fill", "#211e1eff")
+            .attr("x", width)
+            .attr("y", height + margin.top)
 
-        // Add key - 1
-        svg.append("text")
-        .attr("x", (0.42 * width))
-        .attr("y", height + margin.top + 7)
-        .attr("text-anchor", "middle")
-        .text("Import,")
-        .style("stroke", '#402D54')
+            // Add y-axis label
+            svg.append("text")
+            .attr("text-anchor", "end")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -margin.left + 20)
+            .attr("x", -margin.top)
+            .text("Consumption value")
 
-        // Add key - 2
-        svg.append("text")
-        .attr("x", (0.58 * width))
-        .attr("y", height + margin.top + 7)
-        .attr("text-anchor", "middle")
-        .text("Export")
-        .style("stroke", '#D18975')
+            // Add key - 1
+            svg.append("text")
+            .attr("x", (0.42 * width))
+            .attr("y", height + margin.top + 7)
+            .attr("text-anchor", "middle")
+            .text("Import,")
+            .style("stroke", '#402D54')
 
-        // Add a title
-        svg.append("text")
-        .attr("x", (0.5 * width))
-        .attr("y", 0 - (margin.top / 2))
-        .attr("text-anchor", "middle")
-        .text("Plot of the Consumption Data")
+            // Add key - 2
+            svg.append("text")
+            .attr("x", (0.58 * width))
+            .attr("y", height + margin.top + 7)
+            .attr("text-anchor", "middle")
+            .text("Export")
+            .style("stroke", '#D18975')
 
-        // Colour scale: give me a specific consumption type, I return a colour
-        let colour = d3.scaleOrdinal()
-        .domain(["Import", "Export"])
-        .range(["#402D54", "#D18975"])
+            // Add a title
+            svg.append("text")
+            .attr("x", (0.5 * width))
+            .attr("y", 0 - (margin.top / 2))
+            .attr("text-anchor", "middle")
+            .text("Plot of the Consumption Data")
 
-        // Read the data - collect data from online temp
-        // const data2 = [{"household_id": "abcdabcdab", "meter_point_id": 1234567890123, "consumption": [{"consumption_type": "Import", "consumption_value": 1.5, "consumption_date": new Date('2025-06-01')}]}, {"household_id": "Abcdabcdab", "meter_point_id": 1234567890123, "consumption": [{"consumption_type": "Export", "consumption_value": 2.5, "consumption_date": new Date('2025-07-01')}]}]
-        const data = consumption_data
+            // Add key - 3 - Add key representing the on hover data
+            // Add background rectangle first
+            svg.append("rect")
+                .attr("x", (0.5 * width) - 110)
+                .attr("y", (height + margin.top + 20) - 9 + 8)
+                .attr("width", 220)
+                .attr("height", 12)
+                .style("fill", '#313639')
+                .style("rx", "8px")
+            // Add the key
+            svg.append("text")
+            .attr("x", (0.5 * width))
+            .attr("y", height + margin.top + 20 + 8)
+            .attr("text-anchor", "middle")
+            .text("household_id, meter_point_id, value, date; id")
+            .style("fill", '#f9f9f9')
+            .style("font", "10px sans-serif")
 
-        // Create div - optional use css
-        const div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0); // hide the div initially
+            // Add plot description
+            svg.append("text")
+            .attr("x", (0.5 * width))
+            .attr("y", height + margin.top + 20 + 30)
+            .attr("text-anchor", "middle")
+            .text(plot_description)
+            .style("fill", '#151414ff')
+            .style("font", "10px sans-serif")
 
-        // Add dots
-        svg.append("g")
-        .selectAll("dot")
-        .data(data)
-        .enter()
-        .append("circle")
-        .attr("cx", function (d) { return x(new Date(d.consumption[0].consumption_date)); })
-        .attr("cy", function (d) { return y(d.consumption[0].consumption_value); })
-        .attr("r", 5)
-        .style("fill", function (d) { return colour(d.consumption[0].consumption_type) })
-        .on('mouseover', function(event, d) {
-            d3.select(this).transition()
-                .duration('100')
-                .attr("r", 7);
-            
-            // Make div appear
-            div.transition()
-                .duration(100)
-                .style("opacity", 1);
 
-            // Show text in the div by inserting html
-            div.html(d.household_id + ", " + d.meter_point_id + ", " + Math.round((d.consumption[0].consumption_value + Number.EPSILON) * 100) / 100  + ", " + new Date(d.consumption[0].consumption_date).toDateString())
+            // Add the horizontal line for the mean consumption
+            svg.append("line")
+            .attr("x1", x(new Date(earliest_consumption_date)))
+            .attr("x2", x(new Date(new Date().toISOString().split("T")[0])))
+            .attr("y1", y(mean_consumption_value))
+            .attr("y2", y(mean_consumption_value))
+            .style("stroke", "red")
+            .style("stroke-dasharray", ("3, 3"))
+
+            // Add the horizontal line for the mean + 3*std consumption
+            svg.append("line")
+            .attr("x1", x(new Date(earliest_consumption_date)))
+            .attr("x2", x(new Date(new Date().toISOString().split("T")[0])))
+            .attr("y1", y(mean_consumption_value + 3 * std_consumption_value))
+            .attr("y2", y(mean_consumption_value + 3 * std_consumption_value))
+            .style("stroke", "blue")
+            .style("stroke-dasharray", ("3, 3"))
+
+            // Add the horizontal line for the mean - 3*std consumption
+            svg.append("line")
+            .attr("x1", x(new Date(earliest_consumption_date)))
+            .attr("x2", x(new Date('2025-11-05')))
+            .attr("y1", y(mean_consumption_value - 3 * std_consumption_value))
+            .attr("y2", y(mean_consumption_value - 3 * std_consumption_value))
+            .style("stroke", "black")
+            .style("stroke-dasharray", ("3, 3"))
+
+
+            // Colour scale: give me a specific consumption type, I return a colour
+            let colour = d3.scaleOrdinal()
+            .domain(["Import", "Export"])
+            .range(["#402D54", "#D18975"])
+
+            // Read the data - collect data from online temp
+            // const data2 = [{"household_id": "abcdabcdab", "meter_point_id": 1234567890123, "consumption": [{"consumption_type": "Import", "consumption_value": 1.5, "consumption_date": new Date('2025-06-01')}]}, {"household_id": "Abcdabcdab", "meter_point_id": 1234567890123, "consumption": [{"consumption_type": "Export", "consumption_value": 2.5, "consumption_date": new Date('2025-07-01')}]}]
+            const data = consumption_data
+
+            // Create div - optional use css
+            const div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0); // hide the div initially
+
+            // Add dots
+            svg.append("g")
+            .selectAll("dot")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", function (d) { return x(new Date(d.consumption[0].consumption_date)); })
+            .attr("cy", function (d) { return y(d.consumption[0].consumption_value); })
+            .attr("r", 5)
+            .style("fill", function (d) { return colour(d.consumption[0].consumption_type) })
+            .on('mouseover', function(event, d) {
+                d3.select(this).transition()
+                    .duration('100')
+                    .attr("r", 7);
+                
+                // Make div appear
+                div.transition()
+                    .duration(100)
+                    .style("opacity", 1);
+
+                // Show text in the div by inserting html
+                div.html(d.household_id + ", " + d.meter_point_id + ", " + Math.round((d.consumption[0].consumption_value + Number.EPSILON) * 100) / 100  + ", " + new Date(d.consumption[0].consumption_date).toDateString())
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 15) + "px");
+                
+
+            })
+            .on('mouseout', function (event, d) {
+                d3.select(this).transition()
+                    .duration('200')
+                    .attr("r", 5);
+                div.transition()
+                    .duration('200')
+                    .style("opacity", 0);
+            })
+            .on('click', function (event, d) {
+                div.html(d.id)
                 .style("left", (event.pageX + 10) + "px")
                 .style("top", (event.pageY - 15) + "px");
-            
+            });
 
-        })
-        .on('mouseout', function (event, d) {
-            d3.select(this).transition()
-                .duration('200')
-                .attr("r", 5);
-            div.transition()
-                .duration('200')
-                .style("opacity", 0);
-        });
-        }, [])
+        }
+        }, [consumption_data])
+    
         return (
-            <div id="consumption_data_plot"></div>
+            <div>
+                {loadPlot === true ?
+                <div id="consumption_data_plot"></div>
+                : <div> No data to show </div>}
+            </div> 
         )
 }

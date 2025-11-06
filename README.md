@@ -25,11 +25,14 @@ This full-stack app aims to process and analyse consumption data, displaying the
         
         );
     
-    - CREATE TABLE meter_point(
+    - *CREATE TABLE meter_point(
         - ID BIGINT NOT NULL,
         - meter_point_address VARCHAR(20),
+        - *household_ID CHAR(10),
 
-        -PRIMARY KEY (ID)
+        -PRIMARY KEY (ID),
+
+        -*FOREIGN KEY (household_ID) REFERENCES house(ID)
         
         );
     
@@ -77,3 +80,16 @@ At this point, we have a functioning full-stack application which:
 - Illustrates the data and displays analytical results.
 
 Next Steps: Display statistical information about the consumption data; allow users to search consumption data by ID, date, or other; Detect anomalies in the consumption data and expose them.
+
+5. Brief Update to host the Application using Vercel for the Frontend and Render for the Backend.
+
+6. The following has been Added or Implemented:
+- Added: Key for the onhover data for the plot
+- Implemented: Included IDs of the consumption data when returning the data to the frontend
+- Added: Onclick method for the plot to see the IDs of the consumption data
+- Implemented the mean and standard deviation of the data
+- Updated the relationship between household_id and the meter_point id (*). This update assumes that one meter_point is used in only one household; however, one household may have multiple meter_points.
+- Implemented the detect anomalies feature
+- Implemented the ability to delete any data using ID
+- Added searching of the household_id, meter_point_id or consumption_date
+- Adjusted functionality of frontend and backend code 
