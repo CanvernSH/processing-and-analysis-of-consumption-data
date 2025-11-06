@@ -65,8 +65,9 @@ def upload_consumption_data():
 
 
                 # 3. Upload the consumption data
-                query = text("INSERT INTO consumption (household_id, meter_point_id, consumption_type, consumption_value, consumption_date) VALUES (:household_id, :meter_point_id, :consumption_type, :consumption_value, :consumption_date)")
-                db.session.execute(query, { 'household_id': data['household_id'], 'meter_point_id': data['meter_point_id'], 'consumption_type': data['consumption'][0]['consumption_type'], 'consumption_value': data['consumption'][0]['consumption_value'], 'consumption_date': data['consumption'][0]['consumption_date'] })
+                for consumption in data['consumption']:
+                    query = text("INSERT INTO consumption (household_id, meter_point_id, consumption_type, consumption_value, consumption_date) VALUES (:household_id, :meter_point_id, :consumption_type, :consumption_value, :consumption_date)")
+                    db.session.execute(query, { 'household_id': data['household_id'], 'meter_point_id': data['meter_point_id'], 'consumption_type': consumption['consumption_type'], 'consumption_value': consumption['consumption_value'], 'consumption_date': consumption['consumption_date'] })
                 # db.session.commit()
                 # print("consumption_data has been uploaded")
 

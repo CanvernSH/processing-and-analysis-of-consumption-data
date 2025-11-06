@@ -93,3 +93,5 @@ Next Steps: Display statistical information about the consumption data; allow us
 - Implemented the ability to delete any data using ID
 - Added searching of the household_id, meter_point_id or consumption_date
 - Adjusted functionality of frontend and backend code 
+7. The following has been fixed:
+- Updated code to allow for multiple JSONs in the consumption property of the data.

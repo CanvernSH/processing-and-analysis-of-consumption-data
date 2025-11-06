@@ -211,7 +211,7 @@ const VisualiseData = () => {
         <p> Search consumption data </p>
         <input id="search_text" placeholder="A1B2C3D4E5 or 1234567890123 or 2025-11-05" style={{width: '40vw'}}></input>
         <button onClick={handleSearch}> Search for data </button>
-        <textarea id="consumption_data_search" readOnly value={anomalies} style={{width: '90vw', height: '10vh'}}></textarea>
+        <textarea id="consumption_data_search" readOnly style={{width: '90vw', height: '10vh'}}></textarea>
       </div>
 
     </div>

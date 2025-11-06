@@ -2,6 +2,45 @@ import datetime
 import random2 as random
 import string
 
+# Define functions to check the consumption_type, consumption_value and consumption_date
+# Check consumption_type
+def check_consumption_type(consumption_type):
+        # Ensure consumption type is either Import or Export
+        try:
+            if consumption_type in ['Import', 'Export']:
+                return True
+            print("Error: Consumption Type should be either 'Import' or 'Export'")
+            return False
+        except:
+            print("Error: error occurred while validating consumption type")
+            return False
+        
+# Check consumption_value
+def check_consumption_value(consumption_value):
+    # Ensure consumption value is a positive float
+    try:
+        if consumption_value >= 0.0:
+            # Optional - produce warning if consumption value is an integer
+            if type(consumption_value) == int:
+                print("Warning: consumption value is an integer - expected a float")
+            return True
+        print("Error: Consumption value should be greater or equal to 0.0")
+        return False
+    except:
+        print("Error: error occurred while validating the consumption value")
+        return False
+
+# Check consumption_date
+def check_consumption_date(consumption_date):
+    # Ensure consumption date is valid and in yyyy-mm-dd format
+    try:
+        datetime.date.fromisoformat(consumption_date)
+        return True
+    except:
+        print("Error: error occurred while validating the consumption date - Consumption date should be in the yyyy-mm-dd format")
+        return False
+
+# Define the class
 # Validate the Data
 class ValidateData():
     def __init__(self, consumption_data):
@@ -43,44 +82,22 @@ class ValidateData():
         except:
             print("Error: error occurred while validating the meter_point_id")
             return False
-        
-    def check_consumption_type(self):
-        # Ensure consumption type is either Import or Export
+    
+    def check_consumption_property(self):
+        # Check all 3 properties of each json in the array consumption 
         try:
-            if self.data['consumption'][0]['consumption_type'] in ['Import', 'Export']:
-                return True
-            print("Error: Consumption Type should be either 'Import' or 'Export'")
-            return False
-        except:
-            print("Error: error occurred while validating consumption type")
-            return False
-        
-    def check_consumption_value(self):
-        # Ensure consumption value is a positive float
-        try:
-            if self.data['consumption'][0]['consumption_value'] >= 0.0:
-                # Optional - produce warning if consumption value is an integer
-                if type(self.data['consumption'][0]['consumption_value']) == int:
-                    print("Warning: consumption value is an integer - expected a float")
-                return True
-            print("Error: Consumption value should be greater or equal to 0.0")
-            return False
-        except:
-            print("Error: error occurred while validating the consumption value")
-            return False
-        
-    def check_consumption_date(self):
-        # Ensure consumption date is valid and in yyyy-mm-dd format
-        try:
-            datetime.date.fromisoformat(self.data['consumption'][0]['consumption_date'])
+            for json in self.data['consumption']:
+                if check_consumption_type(json.consumption_type) == False or check_consumption_value(json.consumption_value) == False or check_consumption_date(json.consumption_date) == False:
+                    return False
             return True
         except:
-            print("Error: error occurred while validating the consumption date - Consumption date should be in the yyyy-mm-dd format")
+            print("Error: error occurred while validating the consumption array")
             return False
+
         
     def validate_all_checks(self):
         try:
-            if self.check_household_id() and self.check_meter_point_id() and self.check_consumption_type() and self.check_consumption_value() and self.check_consumption_date():
+            if self.check_household_id() and self.check_meter_point_id() and self.check_consumption_property:
                 return True
             return False
         except:
@@ -121,6 +138,7 @@ def create_data(n = 1):
     return consumption_data
 
 if __name__ == '__main__':
-    print(10**14)
-    print(create_data(5))
-    100000000000000
+    print(datetime.datetime.fromisoformat("2025-11-06 10:00:00"))
+    print(datetime.date.fromisoformat('2025-11-06'))
+    print(datetime.datetime.fromisoformat('2025-11-06'))
+    
